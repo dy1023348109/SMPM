@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical" android:layout_width="match_parent"
+android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="50dp">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolBar"
+        android:background="@color/colorBg"
+        android:title="出货"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="货物"
+            android:textSize="20sp"
+
+            android:textColor="@color/colorWhite"/>
+    </android.support.v7.widget.Toolbar>
+</LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#aab9f4"
+        android:orientation="horizontal"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
+        <EditText
+            android:id="@+id/input_area"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5sp"
+            android:layout_weight="9"
+            android:background="@drawable/import_bg"
+            android:hint="输入要查找的商品名称"
+            android:maxLines="1"
+            android:singleLine="true" />
+
+        <Button
+            android:id="@+id/search"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:layout_marginLeft="10sp"
+            android:layout_weight="1"
+            android:background="@drawable/search" />
+
+        <Button
+            android:id="@+id/add"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/add" />
+
+    </LinearLayout>
+
+    <ListView
+    android:id="@+id/goods_list"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+
+</ListView>
+</LinearLayout>
