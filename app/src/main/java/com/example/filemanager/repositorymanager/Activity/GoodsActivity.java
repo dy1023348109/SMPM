@@ -44,7 +44,8 @@ public class GoodsActivity extends AppCompatActivity {
         goods_price.setText("商品单价:"+good.getGoodprice()+"元");
         goods_spec.setText("商品规格:"+good.getGoodspec());
         goods_img.setBackgroundResource(0);
-        Glide.with(getApplicationContext()).load("http://169.254.54.60:8080/images/"+good.getGoodurl()).listener(errorListener).into(goods_img);
+        Log.e("tag","http://169.254.54.60:8080/images/"+good.getGoodurl());
+        Glide.with(getApplicationContext()).load("http://169.254.54.60:8080/images/"+good.getGoodurl()).into(goods_img);
 
        Log.d("-----------", goods_img.getResources().toString());
     }

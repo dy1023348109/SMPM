@@ -47,6 +47,7 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
     public Button add;
     public Button search;
     public ListView good_list;
+    public List<Good> currentList=new ArrayList<Good>();
     public View mView;
     public MyArrayAdapter goodsAdapter;
     String [] item={"出库","入库"};
@@ -59,9 +60,10 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
             if (message.what==1)
             {
                 Log.d("------datalist------",datalist.size()+"");
-                if (datalist.size()==0)
+                if (datalist.size()==0||datalist.get(0).getGoodid()==-1)
                 {
                     Toast.makeText(getContext(),"没有这些商品",Toast.LENGTH_SHORT).show();
+                    datalist=currentList;
                 }
                 else
                 {
@@ -88,7 +90,7 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
         add= (Button) mView.findViewById(R.id.add);
         search= (Button) mView.findViewById(R.id.search);
         good_list= (ListView) mView.findViewById(R.id.goods_list);
-        getFromServlet("");
+        getFromServletByname("");
 
         add.setOnClickListener(this);
         search.setOnClickListener(this);
@@ -107,7 +109,7 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    public void getFromServlet(String n)
+    public void getFromServletByname(String n)
     {
         final String name=n.replaceAll(" ","");
         Log.d("----s--",name);
@@ -132,11 +134,12 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
                          sb.append(line);
                      }
                      String jsonstr=sb.toString();
-                     Log.e("-----------",jsonstr);
+                     Log.e("----name-------",jsonstr);
                     // String jsonstr=new String(js.getBytes("iso-8859-1"),"utf-8");
                      ArrayList<Good> goodlist=new ArrayList<Good>();
 
-                     ShowData(jsonstr,name,goodlist);
+                     ShowData(jsonstr,name,-1,goodlist);
+                     currentList=datalist;
                      datalist=goodlist;
                      Log.d("----goodlist---",goodlist.size()+"");
                      Log.d("----datalist---",datalist.size()+"");
@@ -152,8 +155,8 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
              }
          }).start();
     }
-    public  List<Good> ShowData(String jsonstr,String goodname,List<Good> dl)  {
-        if(goodname.equals(""))
+    public  List<Good> ShowData(String jsonstr,String goodname,int goodid,List<Good> dl)  {
+        if(goodname.equals("")&&goodid==-1)
         {
             //显示全部数据  json Array
             try
@@ -186,7 +189,6 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
         {
             //显示 一条   jsonObject
             try{
-                //  data=getFromServlet(goodname);
                 JSONObject jsonObject=new JSONObject(jsonstr);
                 Good good=new Good();
                 good.setGoodid(jsonObject.getInt("good_id"));
@@ -238,11 +240,66 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
               builder.show();
             break;
             case R.id.search://查找货物
-                String gname=input_area.getText().toString();
-                getFromServlet(gname);
+                String str=input_area.getText().toString();
+                boolean isNum = str.matches("[0-9]+");
+                Log.d("isNum",isNum+"");
+                if (isNum)
+                {
+                    int gid=Integer.valueOf(str);
+                    getFromServletById(gid);
+                }
+                else
+                {
+                    getFromServletByname(str);
+                }
                 break;
             default:
                 break;
         }
     }
+
+    public void getFromServletById(final int id)
+    {
+
+
+        final String url="http://169.254.186.190:8080/WORK/servlet/SearchGoodServletById?good_id="+id;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+
+                    URL Url=new URL(url);
+                    HttpURLConnection httpURLConnection= (HttpURLConnection) Url.openConnection();
+                    httpURLConnection.setRequestMethod("GET");
+                    httpURLConnection.setConnectTimeout(8000);
+                    httpURLConnection.setReadTimeout(8000);
+                    httpURLConnection.setRequestProperty("Charset", "UTF-8");
+                    InputStream in=httpURLConnection.getInputStream();
+                    BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(in));
+                    StringBuilder sb = new StringBuilder();
+                    String line;
+                    while((line=bufferedReader.readLine())!=null)
+                    {
+                        sb.append(line);
+                    }
+                    String jsonstr=sb.toString();
+                    ArrayList<Good> goodlist=new ArrayList<Good>();
+                    ShowData(jsonstr,"",id,goodlist);
+                    currentList=datalist;
+                    datalist=goodlist;
+                    Message message=new Message();
+                    message.what=1;
+                    handler.sendMessage(message);
+
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+
+
 }

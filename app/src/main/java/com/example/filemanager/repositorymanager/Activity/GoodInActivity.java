@@ -22,6 +22,7 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.example.filemanager.repositorymanager.Entity.Good;
 import com.example.filemanager.repositorymanager.R;
 
 import org.json.JSONException;
@@ -51,10 +52,12 @@ public class GoodInActivity extends AppCompatActivity {
     public EditText good_in_spec;
     public EditText good_in_price;
     public EditText good_in_quan;
-    public ImageView good_in_img;
+    public TextView good_in_img;
     public Button good_in_verify;
     public Button good_in_save;
-    public TextView good_in_info;
+    public Button select_img;
+
+  //  public TextView good_in_info;
     public int RESULT_LOAD_IMAGE = 1;
     public String imgpath;
     int type = -1;
@@ -65,6 +68,10 @@ public class GoodInActivity extends AppCompatActivity {
             switch (message.what) {
                 case 0: //有这个id
                     info = "商品已存在 只更新数据";
+                    Good good= (Good) message.obj;
+                    good_in_name.setText(good.getGoodname());
+                    good_in_price.setText(good.getGoodprice()+"元");
+                    good_in_spec.setText(good.getGoodspec());
                     break;
                 case 1:
                     info = "无此商品 将添加新商品";
@@ -97,23 +104,24 @@ public class GoodInActivity extends AppCompatActivity {
                 default:
                     break;
             }
-            good_in_info.setText(info);
+            Toast.makeText(getApplicationContext(),info,Toast.LENGTH_SHORT).show();
         }
     };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_good_in);
-        good_in_id = (EditText) findViewById(R.id.good_in_id);
+        setContentView(R.layout.out);
+        good_in_id = (EditText) findViewById(R.id.good_in_input);
         good_in_name = (EditText) findViewById(R.id.good_in_name);
         good_in_spec = (EditText) findViewById(R.id.good_in_spec);
         good_in_price = (EditText) findViewById(R.id.good_in_price);
         good_in_quan = (EditText) findViewById(R.id.good_in_quan);
-        good_in_img = (ImageView) findViewById(R.id.good_in_img);
+        good_in_img = (TextView) findViewById(R.id.img_path);
         good_in_verify = (Button) findViewById(R.id.good_in_verify);
         good_in_save = (Button) findViewById(R.id.good_in_save);
-        good_in_info = (TextView) findViewById(R.id.good_in_info);
+        select_img= (Button) findViewById(R.id.select_img);
+      //  good_in_info = (TextView) findViewById(R.id.good_in_info);
 
         good_in_save.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -138,7 +146,7 @@ public class GoodInActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    int good_id = Integer.valueOf(good_in_id.getText().toString());
+                    final int good_id = Integer.valueOf(good_in_id.getText().toString());
                     //判断id是否已存在 在一个线程里查询数据库 然后发送给handler 由handler处理 显示
                     final String url = "http://169.254.186.190:8080/WORK/servlet/VerifyGoodIdServlet?good_id=" + good_id;
                     new Thread(new Runnable() {
@@ -161,7 +169,23 @@ public class GoodInActivity extends AppCompatActivity {
                                 }
                                 JSONObject json = new JSONObject(sb.toString());
                                 Message message = new Message();
-                                message.what = json.getInt("status");
+                                Good good=new Good();
+                                Log.e("good",json.toString());
+                                good.setGoodid(json.getInt("good_id"));
+                                good.setGoodprice(json.getInt("good_price"));
+                                good.setGoodquan(json.getInt("good_quan"));
+                                good.setGoodname(json.getString("good_name"));
+                                good.setGoodspec(json.getString("good_spec"));
+                                good.setGoodurl(json.getString("good_url"));
+                                message.obj=good;
+                                if (good.getGoodid()==-1)
+                                {
+                                    message.what=1;
+                                }
+                                else
+                                {
+                                    message.what=0;
+                                }
                                 handler.sendMessage(message);
 
                             } catch (Exception e) {
@@ -180,7 +204,7 @@ public class GoodInActivity extends AppCompatActivity {
         });
 
 
-        good_in_img.setOnClickListener(new View.OnClickListener() {
+        select_img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(
@@ -203,12 +227,7 @@ public class GoodInActivity extends AppCompatActivity {
             cursor.moveToFirst();
             int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
             imgpath = cursor.getString(columnIndex);
-            good_in_img.setBackgroundResource(0);
-            Glide.with(getApplicationContext())
-                    .load(imgpath)
-                    .listener(errorListener)
-                    .into(good_in_img);
-
+            good_in_img.setText(imgpath);
             Log.e("path------", imgpath);
             cursor.close();
         }
