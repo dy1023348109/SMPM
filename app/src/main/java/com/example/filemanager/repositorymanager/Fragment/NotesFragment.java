@@ -125,6 +125,7 @@ public class NotesFragment extends Fragment  implements View.OnClickListener{
                 {
                     getFromServlet(input,"");
 
+
                 }
                 else
                 {

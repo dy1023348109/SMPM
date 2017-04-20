@@ -21,7 +21,7 @@
             android:id="@+id/goods_activity_name"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:textColor="#3750f5"
+            android:textColor="@color/colorBg"
             android:text="商品名:卫龙辣条"
             android:textSize="35sp"/>
         <View
@@ -38,6 +38,7 @@
                 android:id="@+id/goods_activity_id"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
+                android:textColor="#000000"
                 android:text="商品编号:910089298131"
                 android:textSize="26sp"/>
 
@@ -46,6 +47,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:layout_marginTop="10dp"
+                android:textColor="#000000"
+
                 android:text="商品规格:50包/箱"
                 android:textSize="26sp"/>
             <TextView
@@ -53,6 +56,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:layout_marginTop="10dp"
+                android:textColor="#000000"
+
                 android:text="商品单价:50元/箱"
                 android:textSize="26sp"/>
             <TextView
@@ -61,6 +66,7 @@
                 android:layout_height="30dp"
                 android:layout_marginTop="10dp"
                 android:text="商品余量:47箱"
+                android:textColor="#000000"
                 android:textSize="26sp"/>
 
         </LinearLayout>

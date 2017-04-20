@@ -180,7 +180,7 @@ public class GoodOutActivity extends AppCompatActivity implements View.OnClickLi
     {
         //更新数据库数据
 
-        final String url="http://169.254.186.190:8080/WORK/servlet/UpdateRemainServlet?good_id="+good_id+"&remain="+remain+"&out="+out+"&good_name="+good_name;
+        final String url="http://169.254.186.190:8080/WORK/servlet/UpdateRemainServlet?good_id="+good_id+"&remain="+remain+"&activity_good_in="+out+"&good_name="+good_name;
         new Thread(new Runnable() {
             @Override
             public void run() {
