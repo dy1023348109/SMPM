@@ -13,6 +13,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.filemanager.repositorymanager.Entity.Net;
 import com.example.filemanager.repositorymanager.Entity.User;
 import com.example.filemanager.repositorymanager.R;
 
@@ -42,11 +43,15 @@ public class ChangePermissionActivity extends AppCompatActivity implements Adapt
                 case 1:
                 case 2:
                 case 3:
-                    canChange=true;
+                    //canChange=true;
                     changePermission();
                     break;
                 case 4:
                     Toast.makeText(getApplicationContext(),"修改成功",Toast.LENGTH_SHORT).show();
+                    Message message1=new Message();
+                    message1.what=-3;
+                    handler.sendMessageAtTime(message1,1000);
+
                     break;
                 case 0:
                     Toast.makeText(getApplicationContext(),"账号密码不匹配",Toast.LENGTH_SHORT).show();
@@ -56,6 +61,9 @@ public class ChangePermissionActivity extends AppCompatActivity implements Adapt
                     break;
                 case -2:
                     Toast.makeText(getApplicationContext(),"修改失败",Toast.LENGTH_SHORT).show();
+                    break;
+                case -3:
+                    finish();
                     break;
                 default:
                     break;
@@ -103,22 +111,13 @@ public class ChangePermissionActivity extends AppCompatActivity implements Adapt
     @Override
     public void onClick(View view) {
         verify();
-        if (canChange)
-        {
-            changePermission();
-        }
-        else
-        {
-            Toast.makeText(getApplicationContext(),"账号密码不匹配",Toast.LENGTH_SHORT).show();
-        }
-
     }
 
     private void changePermission() {
         {
             String  user_name=change_permission_username.getText().toString();
             String  user_password=change_permission_password.getText().toString();
-            final String url="http://169.254.186.190:8080/WORK/servlet/ChangeServlet?username="+
+            final String url="http://"+ Net.ip+":8080/WORK/servlet/ChangeServlet?username="+
                     user_name+"&newpassword=empty"+"&newpermission="+permission;
 
             new Thread(new Runnable() {
@@ -156,9 +155,8 @@ public class ChangePermissionActivity extends AppCompatActivity implements Adapt
     {
         String  user_name=change_permission_username.getText().toString();
         String  user_password=change_permission_password.getText().toString();
-        final String url="http://169.254.186.190:8080/WORK/servlet/LoginServlet?username="+
+        final String url="http://"+ Net.ip+":8080/WORK/servlet/LoginServlet?username="+
                 user_name+"&password="+ user_password;
-
         new Thread(new Runnable() {
             @Override
             public void run() {

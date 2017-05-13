@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.filemanager.repositorymanager.Entity.Good;
+import com.example.filemanager.repositorymanager.Entity.Net;
 import com.example.filemanager.repositorymanager.R;
 
 import org.json.JSONArray;
@@ -22,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class GoodOutActivity extends AppCompatActivity implements View.OnClickListener {
     public EditText good_out_input,good_out_to;
@@ -44,18 +46,20 @@ public class GoodOutActivity extends AppCompatActivity implements View.OnClickLi
                   }
                   else
                   {
-                      goods_out_id.setText("商品编号:"+good.getGoodid());
-                      good_out_name.setText("商品名称:"+good.getGoodname());
-                      good_out_spec.setText("商品规格:"+good.getGoodspec());
-                      good_out_price.setText("商品价格:"+good.getGoodprice());
-                      good_out_quan.setText("商品数量:"+good.getGoodquan());
+                      goods_out_id.setText(good.getGoodid()+"");
+                      good_out_name.setText(good.getGoodname());
+                      good_out_spec.setText(good.getGoodspec());
+                      good_out_price.setText(good.getGoodprice()+"元");
+                      good_out_quan.setText(good.getGoodquan()+"");
                       remain=good.getGoodquan();
                   }
 
                   break;
               case 8:
                   //更新成功
+                  good_out_quan.setText(""+remain);
                   Toast.makeText(GoodOutActivity.this,"更新数据成功",Toast.LENGTH_SHORT).show();
+
                   break;
               case 9:
                   //更新失败
@@ -75,10 +79,8 @@ public class GoodOutActivity extends AppCompatActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_good_out);
-
         good_out_input= (EditText) findViewById(R.id.good_out_input);
         good_out_to= (EditText) findViewById(R.id.good_out_to);
-
         goods_out_id= (TextView) findViewById(R.id.good_out_id);
         good_out_name= (TextView) findViewById(R.id.good_out_name);
         good_out_spec= (TextView) findViewById(R.id.good_out_spec);
@@ -88,6 +90,19 @@ public class GoodOutActivity extends AppCompatActivity implements View.OnClickLi
         good_out_save=(Button) findViewById(R.id.good_out_save);
         good_out_verify.setOnClickListener(this);
         good_out_save.setOnClickListener(this);
+
+        good= (Good) getIntent().getSerializableExtra("good");
+        if (good.getGoodid()!=-1)
+        {
+            goods_out_id.setText(good.getGoodid()+"");
+            good_out_name.setText(good.getGoodname());
+            good_out_spec.setText(good.getGoodspec());
+            good_out_price.setText(good.getGoodprice()+"元");
+            good_out_quan.setText(good.getGoodquan()+"");
+            remain=good.getGoodquan();
+            good_out_to.requestFocus();
+
+        }
 
     }
 
@@ -99,7 +114,19 @@ public class GoodOutActivity extends AppCompatActivity implements View.OnClickLi
                String gname=good_out_input.getText().toString();
                if (!gname.equals(""))
                {
-                   getFromServlet(gname);
+
+                   boolean isNum = gname.matches("[0-9]+");
+                   Log.d("isNum",isNum+"");
+                   if (isNum)
+                   {
+                       int gid=Integer.valueOf(gname);
+                       getFromServletById(gid);
+                   }
+                   else
+                   {
+                       getFromServletByname(gname);
+                   }
+                   break;
                }
                else
                {
@@ -127,60 +154,11 @@ public class GoodOutActivity extends AppCompatActivity implements View.OnClickLi
 
        }
     }
-
-    public void getFromServlet(String n)
-    {
-        final String name=n.replaceAll(" ","");
-        Log.d("----s--",name);
-        final String url="http://169.254.186.190:8080/WORK/servlet/SearchGoodServlet?good_name="+(name.equals("")?"empty":name);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try{
-
-                    URL Url=new URL(url);
-                    HttpURLConnection httpURLConnection= (HttpURLConnection) Url.openConnection();
-                    httpURLConnection.setRequestMethod("GET");
-                    httpURLConnection.setConnectTimeout(8000);
-                    httpURLConnection.setReadTimeout(8000);
-                    httpURLConnection.setRequestProperty("Charset", "UTF-8");
-                    InputStream in=httpURLConnection.getInputStream();
-                    BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(in));
-                    StringBuilder sb = new StringBuilder();
-                    String line;
-                    while((line=bufferedReader.readLine())!=null)
-                    {
-                        sb.append(line);
-                    }
-                    String jsonstr=sb.toString();
-
-                    JSONObject jsonObject=new JSONObject(jsonstr);
-                    Good good=new Good();
-                    good.setGoodid(jsonObject.getInt("good_id"));
-                    good.setGoodprice(jsonObject.getInt("good_price"));
-                    good.setGoodquan(jsonObject.getInt("good_quan"));
-                    good.setGoodname(jsonObject.getString("good_name"));
-                    good.setGoodspec(jsonObject.getString("good_spec"));
-                    good.setGoodurl(jsonObject.getString("good_url"));
-                    Message message=new Message();
-                    message.what=1;
-                    message.obj=good;
-                    handler.sendMessage(message);
-
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
-
     public boolean UpdateRemain(int good_id,int remain,int out,String good_name)
     {
         //更新数据库数据
 
-        final String url="http://169.254.186.190:8080/WORK/servlet/UpdateRemainServlet?good_id="+good_id+"&remain="+remain+"&activity_good_in="+out+"&good_name="+good_name;
+        final String url="http://"+ Net.ip+":8080/WORK/servlet/UpdateRemainServlet?good_id="+good_id+"&remain="+remain+"&out="+out+"&good_name="+good_name;
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -218,6 +196,101 @@ public class GoodOutActivity extends AppCompatActivity implements View.OnClickLi
 
 
         return true;
+    }
+
+
+    public void getFromServletById(final int id)
+    {
+
+
+        final String url="http://"+ Net.ip+":8080/WORK/servlet/SearchGoodServletById?good_id="+id;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+
+                    URL Url=new URL(url);
+                    HttpURLConnection httpURLConnection= (HttpURLConnection) Url.openConnection();
+                    httpURLConnection.setRequestMethod("GET");
+                    httpURLConnection.setConnectTimeout(8000);
+                    httpURLConnection.setReadTimeout(8000);
+                    httpURLConnection.setRequestProperty("Charset", "UTF-8");
+                    InputStream in=httpURLConnection.getInputStream();
+                    BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(in));
+                    StringBuilder sb = new StringBuilder();
+                    String line;
+                    while((line=bufferedReader.readLine())!=null)
+                    {
+                        sb.append(line);
+                    }
+                    String jsonstr=sb.toString();
+                    JSONObject jsonObject=new JSONObject(jsonstr);
+                    Good good=new Good();
+                    good.setGoodid(jsonObject.getInt("good_id"));
+                    good.setGoodprice(jsonObject.getInt("good_price"));
+                    good.setGoodquan(jsonObject.getInt("good_quan"));
+                    good.setGoodname(jsonObject.getString("good_name"));
+                    good.setGoodspec(jsonObject.getString("good_spec"));
+                    good.setGoodurl(jsonObject.getString("good_url"));
+                    Message message=new Message();
+                    message.what=1;
+                    message.obj=good;
+                    handler.sendMessage(message);
+
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    public void getFromServletByname(String n)
+    {
+        final String name=n.replaceAll(" ","");
+        Log.d("----s--",name);
+        final String url="http://"+ Net.ip+":8080/WORK/servlet/SearchGoodServlet?good_name="+(name.equals("")?"empty":name);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+
+                    URL Url=new URL(url);
+                    HttpURLConnection httpURLConnection= (HttpURLConnection) Url.openConnection();
+                    httpURLConnection.setRequestMethod("GET");
+                    httpURLConnection.setConnectTimeout(8000);
+                    httpURLConnection.setReadTimeout(8000);
+                    httpURLConnection.setRequestProperty("Charset", "UTF-8");
+                    InputStream in=httpURLConnection.getInputStream();
+                    BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(in));
+                    StringBuilder sb = new StringBuilder();
+                    String line;
+                    while((line=bufferedReader.readLine())!=null)
+                    {
+                        sb.append(line);
+                    }
+                    String jsonstr=sb.toString();
+                    JSONObject jsonObject=new JSONObject(jsonstr);
+                    Good good=new Good();
+                    good.setGoodid(jsonObject.getInt("good_id"));
+                    good.setGoodprice(jsonObject.getInt("good_price"));
+                    good.setGoodquan(jsonObject.getInt("good_quan"));
+                    good.setGoodname(jsonObject.getString("good_name"));
+                    good.setGoodspec(jsonObject.getString("good_spec"));
+                    good.setGoodurl(jsonObject.getString("good_url"));
+                    Message message=new Message();
+                    message.what=1;
+                    message.obj=good;
+                    handler.sendMessage(message);
+
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
 }

@@ -19,6 +19,7 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.filemanager.repositorymanager.Entity.Good;
+import com.example.filemanager.repositorymanager.Entity.Net;
 import com.example.filemanager.repositorymanager.R;
 
 import org.json.JSONObject;
@@ -63,31 +64,33 @@ public class GoodInActivity extends AppCompatActivity {
                     break;
                 case 1:
                     info = "无此商品 将添加新商品";
+                    good_in_name.setText("");
+                    good_in_price.setText("");
+                    good_in_spec.setText("");
                     break;
-                case 3:
-                    //info="更新或添加成功";
-                    Toast.makeText(GoodInActivity.this, "成功", Toast.LENGTH_SHORT).show();
-                    formUpload("http://169.254.186.190:8080/WORK/servlet/SaveImageServlet", imgpath);
-                    finish();
+                case 3://更新添加成功
+                    formUpload("http://"+Net.ip+":8080/WORK/servlet/SaveImageServlet", imgpath);
                     break;
                 case 4:
                     //info="更新或添加失败";
                     Toast.makeText(GoodInActivity.this, "失败", Toast.LENGTH_SHORT).show();
-                case 5:
-                    //图片上传成功
-
-                    Toast.makeText(GoodInActivity.this, "图片上传成功", Toast.LENGTH_SHORT).show();
-                    break;
                 case 6:
                     //图片上传失败
-
                     Toast.makeText(GoodInActivity.this, "图片上传失败", Toast.LENGTH_SHORT).show();
                     break;
                 case 7:
                     //数据库图片信息更新成功
+                    Toast.makeText(GoodInActivity.this,"成功", Toast.LENGTH_SHORT).show();
+                    Message message1=new Message();
+                    message1.what=-3;
+                    handler.sendMessageAtTime(message1,1000);
                     break;
                 case 8:
                     //数据库图片信息更新失败
+                    Toast.makeText(GoodInActivity.this, "失败", Toast.LENGTH_SHORT).show();
+                    break;
+                case -3:
+                    finish();
                     break;
                 default:
                     break;
@@ -109,7 +112,6 @@ public class GoodInActivity extends AppCompatActivity {
         good_in_verify = (Button) findViewById(R.id.good_in_verify);
         good_in_save = (Button) findViewById(R.id.good_in_save);
         select_img= (Button) findViewById(R.id.select_img);
-      //  good_in_info = (TextView) findViewById(R.id.good_in_info);
 
         good_in_save.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -120,14 +122,12 @@ public class GoodInActivity extends AppCompatActivity {
                 String good_spec = good_in_spec.getText().toString();
                 int good_price = Integer.valueOf(good_in_price.getText().toString());
                 int good_quan = Integer.valueOf(good_in_quan.getText().toString());
-                String url = "http://169.254.186.190:8080/WORK/servlet/AddGoodsServlet?good_name="
+                String url = "http://"+ Net.ip+":8080/WORK/servlet/AddGoodsServlet?good_name="
                         + good_name + "&good_id=" + good_id + "&good_spec=" + good_spec + "&good_price=" + good_price
                         + "&good_quan=" + good_quan + "&type=" + type;
 
                 saveData(url);
-                //传输图片
-
-               // formUpload("http://169.254.186.190:8080/WORK/servlet/SaveImageServlet", imgpath);
+                // formUpload("http://169.254.186.190:8080/WORK/servlet/SaveImageServlet", imgpath);
             }
         });
         good_in_verify.setOnClickListener(new View.OnClickListener() {
@@ -136,7 +136,7 @@ public class GoodInActivity extends AppCompatActivity {
                 try {
                     final int good_id = Integer.valueOf(good_in_id.getText().toString());
                     //判断id是否已存在 在一个线程里查询数据库 然后发送给handler 由handler处理 显示
-                    final String url = "http://169.254.186.190:8080/WORK/servlet/VerifyGoodIdServlet?good_id=" + good_id;
+                    final String url = "http://"+ Net.ip+":8080/WORK/servlet/VerifyGoodIdServlet?good_id=" + good_id;
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -148,6 +148,7 @@ public class GoodInActivity extends AppCompatActivity {
                                 httpURLConnection.setRequestMethod("GET");
                                 httpURLConnection.setConnectTimeout(8000);
                                 httpURLConnection.setReadTimeout(8000);
+                                httpURLConnection.setRequestProperty("Charset", "UTF-8");
                                 InputStream in = httpURLConnection.getInputStream();
                                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
                                 StringBuilder sb = new StringBuilder();
@@ -280,11 +281,9 @@ public class GoodInActivity extends AppCompatActivity {
                             "Mozilla/5.0 (Windows; U; Windows NT 6.1; zh-CN; rv:1.9.2.6)");
                     conn.setRequestProperty("Content-Type",
                             "multipart/form-data; boundary=" + BOUNDARY);
-
                     OutputStream out = new DataOutputStream(conn.getOutputStream());
                     File file = new File(filePath);
-//
-                   String filename = file.getName();
+                    String filename = file.getName();
                     Log.e("------",filename);
                     String contentType = "";
                     if (filename.endsWith(".png")) {
@@ -334,8 +333,6 @@ public class GoodInActivity extends AppCompatActivity {
                     rsp = buffer.toString();
                     int good_id = Integer.valueOf(good_in_id.getText().toString());
                     updateImagePath(rsp, good_id);
-
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
@@ -366,15 +363,15 @@ public class GoodInActivity extends AppCompatActivity {
             return false;
         }
     };
-
+    //更新服务端的图片名称
     public void updateImagePath(String rsp, int good_id) {
         try {
             JSONObject json = new JSONObject(rsp);
 
             json.getInt("status");
             String filename = json.getString("filename");
-            if (json.getInt("status") == 5) {
-                String update = "http://169.254.186.190:8080/WORK/servlet/UpdateImagenameServlet?good_id="
+            if (json.getInt("status") == 5) {//成功
+                String update = "http://"+ Net.ip+":8080/WORK/servlet/UpdateImagenameServlet?good_id="
                         + good_id + "&filename=" + filename;
                 URL url = new URL(update);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();

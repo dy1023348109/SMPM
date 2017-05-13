@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 
@@ -59,8 +60,6 @@ public class MainActivity extends AppCompatActivity {
 
                             }
                             FragmentTransaction transaction = fragmentManager.beginTransaction();
-//                    transaction.hide(currentfragment);
-//                    transaction.add(R.id.frame_area, userFragment);
                             transaction.replace(R.id.frame_area,goodsFragment);
                             currentfragment = goodsFragment;
                             transaction.commit();
@@ -87,8 +86,6 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.user:
                         if (currentfragment!=userFragment)
                         {
-
-
                             if (userFragment == null) {
                                 userFragment = new UserFragment();
 
@@ -112,7 +109,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        this.finish();
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            Intent home = new Intent(Intent.ACTION_MAIN);
+            home.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            home.addCategory(Intent.CATEGORY_HOME);
+            startActivity(home);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

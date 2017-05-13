@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.example.filemanager.repositorymanager.Adapter.MyArrayAdapter;
 import com.example.filemanager.repositorymanager.Adapter.MyNoteAdapter;
 import com.example.filemanager.repositorymanager.Entity.Good;
+import com.example.filemanager.repositorymanager.Entity.Net;
 import com.example.filemanager.repositorymanager.Entity.Note;
 import com.example.filemanager.repositorymanager.R;
 
@@ -151,7 +152,8 @@ public class NotesFragment extends Fragment  implements View.OnClickListener{
     public void getFromServlet(String n,String date)
     {
         final String name=n.replaceAll("","");
-        final String url="http://169.254.186.190:8080/WORK/servlet/SearchNoteServlet?good_name="+(name.equals("")?"empty":name)+"&note_date="+(date.equals("")?"empty":date);
+        Log.e(TAG,name);
+        final String url="http://"+ Net.ip+":8080/WORK/servlet/SearchNoteServlet?good_name="+(name.equals("")?"empty":name)+"&note_date="+(date.equals("")?"empty":date);
         Log.d(TAG,url);
         new Thread(new Runnable() {
             @Override
@@ -163,6 +165,7 @@ public class NotesFragment extends Fragment  implements View.OnClickListener{
                     httpURLConnection.setRequestMethod("GET");
                     httpURLConnection.setConnectTimeout(8000);
                     httpURLConnection.setReadTimeout(8000);
+                    httpURLConnection.setRequestProperty("Charset", "UTF-8");
                     InputStream in=httpURLConnection.getInputStream();
                     BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(in));
                     StringBuilder sb = new StringBuilder();
@@ -190,55 +193,31 @@ public class NotesFragment extends Fragment  implements View.OnClickListener{
     }
     public ArrayList<Note> ShowData(String jsonstr, String goodname)  {
         ArrayList<Note> nl=new ArrayList<Note>();
-        if(goodname.equals(""))
+        try
         {
-            //显示多条数据  json Array
-            try
+            JSONObject jsonObject=new JSONObject(jsonstr);
+            JSONArray jsonArray=jsonObject.getJSONArray("data");
+
+            for(int i=0;i<jsonArray.length();i++)
             {
-                JSONObject jsonObject=new JSONObject(jsonstr);
-                JSONArray jsonArray=jsonObject.getJSONArray("data");
-
-                for(int i=0;i<jsonArray.length();i++)
-                {
-                    JSONObject jo=jsonArray.getJSONObject(i);
-                    Note note=new Note();
-                    note.setNote_good_id(jo.getInt("note_good_id"));
-                    note.setNote_good_name(jo.getString("note_good_name"));
-                    note.setNote_id(jo.getString("note_id"));
-                    note.setNote_quan(jo.getInt("note_quan"));
-                    note.setNote_time(jo.getString("note_time"));
-                    note.setNote_type(jo.getInt("note_type"));
-
-                    nl.add(note);
-                }
-
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-
-        }
-        else
-        {
-
-            try{
-                JSONObject jsonObject=new JSONObject(jsonstr);
+                JSONObject jo=jsonArray.getJSONObject(i);
                 Note note=new Note();
-                note.setNote_good_id(jsonObject.getInt("note_good_id"));
-                note.setNote_good_name(jsonObject.getString("note_good_name"));
-                note.setNote_id(jsonObject.getString("note_id"));
-                note.setNote_quan(jsonObject.getInt("note_quan"));
-                note.setNote_time(jsonObject.getString("note_time"));
-                note.setNote_type(jsonObject.getInt("note_type"));
+                note.setNote_good_id(jo.getInt("note_good_id"));
+                note.setNote_good_name(jo.getString("note_good_name"));
+                note.setNote_id(jo.getString("note_id"));
+                note.setNote_quan(jo.getInt("note_quan"));
+                note.setNote_time(jo.getString("note_time"));
+                note.setNote_type(jo.getInt("note_type"));
+
                 nl.add(note);
             }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
 
         }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
         return  nl;
 
 

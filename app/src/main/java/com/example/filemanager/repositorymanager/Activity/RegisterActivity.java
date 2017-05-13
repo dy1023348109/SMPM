@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.filemanager.repositorymanager.Entity.Net;
 import com.example.filemanager.repositorymanager.R;
 
 import org.json.JSONObject;
@@ -101,7 +102,7 @@ public class RegisterActivity extends AppCompatActivity {
     public void verifyUsername(String user_name)
     {
         String  user_password="abc";
-        final String url="http://169.254.186.190:8080/WORK/servlet/LoginServlet?username="+
+        final String url="http://"+ Net.ip+":8080/WORK/servlet/LoginServlet?username="+
                 user_name+"&password="+ user_password;
         new Thread(new Runnable() {
             @Override
@@ -133,7 +134,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
     public void Register(String username,String password)
     {
-        final String url="http://169.254.186.190:8080/WORK/servlet/RegisterServlet?username="+
+        final String url="http://"+Net.ip+":8080/WORK/servlet/RegisterServlet?username="+
                 username+"&password="+ password;
         new Thread(new Runnable() {
             @Override

@@ -6,12 +6,12 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.filemanager.repositorymanager.Entity.Net;
 import com.example.filemanager.repositorymanager.Entity.User;
 import com.example.filemanager.repositorymanager.R;
 
@@ -75,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
                 //获取 输入的账号和密码
                  String  user_name=username.getText().toString();
                  String  user_password=password.getText().toString();
-                 final String url="http://169.254.186.190:8080/WORK/servlet/LoginServlet?username="+
+                 final String url="http://"+ Net.ip+":8080/WORK/servlet/LoginServlet?username="+
                          user_name+"&password="+ user_password;
 
                 new Thread(new Runnable() {

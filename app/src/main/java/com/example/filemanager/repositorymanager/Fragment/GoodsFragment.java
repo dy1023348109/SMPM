@@ -23,6 +23,8 @@ import com.example.filemanager.repositorymanager.Activity.GoodOutActivity;
 import com.example.filemanager.repositorymanager.Activity.GoodsActivity;
 import com.example.filemanager.repositorymanager.Adapter.MyArrayAdapter;
 import com.example.filemanager.repositorymanager.Entity.Good;
+import com.example.filemanager.repositorymanager.Entity.Net;
+import com.example.filemanager.repositorymanager.Entity.User;
 import com.example.filemanager.repositorymanager.R;
 
 import org.json.JSONArray;
@@ -49,6 +51,7 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
     public ListView good_list;
     public List<Good> currentList=new ArrayList<Good>();
     public View mView;
+    public User user;
     public MyArrayAdapter goodsAdapter;
     String [] item={"出库","入库"};
 
@@ -79,6 +82,7 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
     };
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mView= inflater.inflate(R.layout.good_layout,null);
+       // user= (User) getArguments().getSerializable("user");
         initView();
         return mView;
 
@@ -94,6 +98,22 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
 
         add.setOnClickListener(this);
         search.setOnClickListener(this);
+        good_list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                Good good= datalist.get(i);
+                Intent intent=new Intent();
+                intent.setClass(getContext(), GoodOutActivity.class);
+                Bundle bundle=new Bundle();
+                bundle.putSerializable("good",good);
+                intent.putExtras(bundle);
+                startActivity(intent);
+
+
+                return true;
+            }
+        });
         good_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -102,6 +122,7 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
                         intent.setClass(getContext(), GoodsActivity.class);
                         Bundle bundle=new Bundle();
                         bundle.putSerializable("good",good);
+                        Log.d("tag",good.getGoodurl());
                         intent.putExtras(bundle);
                         startActivity(intent);
 
@@ -113,7 +134,7 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
     {
         final String name=n.replaceAll(" ","");
         Log.d("----s--",name);
-        final String url="http://169.254.186.190:8080/WORK/servlet/SearchGoodServlet?good_name="+(name.equals("")?"empty":name);
+        final String url="http://"+ Net.ip+":8080/WORK/servlet/SearchGoodServlet?good_name="+(name.equals("")?"empty":name);
          new Thread(new Runnable() {
              @Override
              public void run() {
@@ -214,30 +235,37 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
         switch (id)
         {
             case R.id.add:  //货物入库或者出库
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setTitle("货物出库或入库");
-                builder.setItems(item, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // TODO Auto-generated method stub
-                        switch (which)
-                        {
-                            case 0:
-                                //出库
-                                Intent intent1=new Intent();
-                                intent1.setClass(getContext(),GoodOutActivity.class);
-                                startActivity(intent1);
 
-                                break;
-                            case 1:
-                                //入库
-                                Intent intent2=new Intent();
-                                intent2.setClass(getContext(),GoodInActivity.class);
-                                startActivity(intent2);
-                                break;
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle("货物出库或入库");
+                    builder.setItems(item, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // TODO Auto-generated method stub
+                            switch (which)
+                            {
+                                case 0:
+                                    //出库
+                                    Intent intent1=new Intent();
+                                    Bundle bundle=new Bundle();
+                                    Good g=new Good();
+                                    g.setGoodid(-1);
+                                    bundle.putSerializable("good",g);
+                                    intent1.putExtras(bundle);
+                                    intent1.setClass(getContext(),GoodOutActivity.class);
+                                    startActivity(intent1);
+
+                                    break;
+                                case 1:
+                                    //入库
+                                    Intent intent2=new Intent();
+                                    intent2.setClass(getContext(),GoodInActivity.class);
+                                    startActivity(intent2);
+                                    break;
+                            }
                         }
-                       }
                     });
-              builder.show();
+                    builder.show();
+
             break;
             case R.id.search://查找货物
                 String str=input_area.getText().toString();
@@ -262,7 +290,7 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
     {
 
 
-        final String url="http://169.254.186.190:8080/WORK/servlet/SearchGoodServletById?good_id="+id;
+        final String url="http://"+Net.ip+":8080/WORK/servlet/SearchGoodServletById?good_id="+id;
         new Thread(new Runnable() {
             @Override
             public void run() {

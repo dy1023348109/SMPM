@@ -1,5 +1,6 @@
 package com.example.filemanager.repositorymanager.Activity;
 
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.filemanager.repositorymanager.Entity.Net;
 import com.example.filemanager.repositorymanager.R;
 
 import org.json.JSONObject;
@@ -40,7 +42,9 @@ public class ChangePasswordActivity extends AppCompatActivity {
                     break;
                 case 4:
                     Toast.makeText(getApplicationContext(),"修改成功",Toast.LENGTH_SHORT).show();
-
+                    Message message1=new Message();
+                        message1.what=-3;
+                    handler.sendMessageAtTime(message1,1000);
                 case 0:
                     Toast.makeText(getApplicationContext(),"账号密码不匹配",Toast.LENGTH_SHORT).show();
                     break;
@@ -49,6 +53,9 @@ public class ChangePasswordActivity extends AppCompatActivity {
                     break;
                 case -2:
                     Toast.makeText(getApplicationContext(),"修改失败",Toast.LENGTH_SHORT).show();
+                    break;
+                case  -3:
+                    finish();
                     break;
                 default:
                     break;
@@ -70,14 +77,6 @@ public class ChangePasswordActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                  verify();
-//                if (canChange)
-//                {
-//                    changePassword();
-//                }
-//                else
-//                {
-//                    Toast.makeText(getApplicationContext(),"账号密码不匹配",Toast.LENGTH_SHORT).show();
-//                }
             }
         });
 
@@ -86,7 +85,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
     {
         String  user_name=change_username.getText().toString();
         String  user_password=change_old_password.getText().toString();
-        final String url="http://169.254.186.190:8080/WORK/servlet/LoginServlet?username="+
+        final String url="http://"+ Net.ip+":8080/WORK/servlet/LoginServlet?username="+
                 user_name+"&password="+ user_password;
 
         new Thread(new Runnable() {
@@ -123,7 +122,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
     {
         String  user_name=change_username.getText().toString();
         String  user_password=change_password.getText().toString();
-        final String url="http://169.254.186.190:8080/WORK/servlet/ChangeServlet?username="+
+        final String url="http://"+ Net.ip+":8080/WORK/servlet/ChangeServlet?username="+
                 user_name+"&newpassword="+ user_password+"&newpermission=empty";
 
         new Thread(new Runnable() {

@@ -8,10 +8,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.filemanager.repositorymanager.Entity.Good;
+import com.example.filemanager.repositorymanager.Entity.Net;
 import com.example.filemanager.repositorymanager.R;
 
 import org.w3c.dom.Text;
@@ -44,23 +46,12 @@ public class GoodsActivity extends AppCompatActivity {
         goods_price.setText("商品单价:"+good.getGoodprice()+"元");
         goods_spec.setText("商品规格:"+good.getGoodspec());
         goods_img.setBackgroundResource(0);
-        Log.e("tag","http://169.254.54.60:8080/images/"+good.getGoodurl());
-        Glide.with(getApplicationContext()).load("http://169.254.54.60:8080/images/"+good.getGoodurl()).into(goods_img);
-
-       Log.d("-----------", goods_img.getResources().toString());
+        Log.e("tag","http://"+ Net.ip+":8080/images/"+good.getGoodurl());
+        Glide.with(getApplicationContext()).load("http://169.254.54.60:8080/images/"+good.getGoodurl()).diskCacheStrategy(DiskCacheStrategy.NONE).into(goods_img);
+        Log.d("-----------", goods_img.getResources().toString());
     }
-    RequestListener<String,GlideDrawable> errorListener=new RequestListener<String, GlideDrawable>() {
-        @Override
-        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-
-            Log.e("onException",e.toString()+"  model:"+model+" isFirstResource: "+isFirstResource);
-            // imageView.setImageResource(R.mipmap.ic_launcher);
-            return false;
-        }
-        @Override
-        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-            Log.e("onResourceReady","isFromMemoryCache:"+isFromMemoryCache+"  model:"+model+" isFirstResource: "+isFirstResource);
-            return false;
-        }
-    } ;
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
 }
