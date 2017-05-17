@@ -91,6 +91,11 @@ public class NotesFragment extends Fragment  implements View.OnClickListener{
 
 
             }
+            else{
+
+                    Toast.makeText(getContext(),"连接超时",Toast.LENGTH_SHORT).show();
+
+            }
 
 
         }
@@ -186,7 +191,9 @@ public class NotesFragment extends Fragment  implements View.OnClickListener{
                 }
                 catch (Exception e)
                 {
-                    e.printStackTrace();
+                    Message message=new Message();
+                    message.what=-11;
+                    handler.sendMessage(message);
                 }
             }
         }).start();

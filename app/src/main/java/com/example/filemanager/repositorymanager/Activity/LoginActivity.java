@@ -32,7 +32,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_layout);
-
         Button login=(Button)findViewById(R.id.login);
         register=(TextView)findViewById(R.id.login_register);
         username= (EditText) findViewById(R.id.user_name);
@@ -45,10 +44,13 @@ public class LoginActivity extends AppCompatActivity {
                 {   //处理登录情况
 
                     case 0:     //密码错误
-                        Toast.makeText(LoginActivity.this,"password error",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this,"密码错误",Toast.LENGTH_SHORT).show();
                         break;
                     case -1:     //无此用户
-                        Toast.makeText(LoginActivity.this,"no this user",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this,"无此用户",Toast.LENGTH_SHORT).show();
+                        break;
+                    case -11:
+                        Toast.makeText(getApplicationContext(),"连接超时",Toast.LENGTH_SHORT).show();
                         break;
                     default:
                         //成功登陆
@@ -75,38 +77,53 @@ public class LoginActivity extends AppCompatActivity {
                 //获取 输入的账号和密码
                  String  user_name=username.getText().toString();
                  String  user_password=password.getText().toString();
-                 final String url="http://"+ Net.ip+":8080/WORK/servlet/LoginServlet?username="+
-                         user_name+"&password="+ user_password;
+                 if (user_name.contains(" ")||user_password.contains(" "))
+                 {
+                    Toast.makeText(getApplicationContext(),"输入有误，请重新输入",Toast.LENGTH_SHORT).show();
+                 }
+                 else if (user_name.length()<5||user_password.length()<5)
+                 {
+                     Toast.makeText(getApplicationContext(),"至少输入5位，请重新输入",Toast.LENGTH_SHORT).show();
+                 }
+                 else
+                 {
 
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            URL Url=new URL(url);
-                            HttpURLConnection httpURLConnection= (HttpURLConnection) Url.openConnection();
-                            httpURLConnection.setRequestMethod("GET");
-                            httpURLConnection.setConnectTimeout(8000);
-                            httpURLConnection.setReadTimeout(8000);
-                            httpURLConnection.setRequestProperty("Charset", "UTF-8");
-                            InputStream in=httpURLConnection.getInputStream();
-                            BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(in));
-                            StringBuilder sb = new StringBuilder();
-                            String line;
-                            while((line=bufferedReader.readLine())!=null)
-                            {
-                                sb.append(line);
-                            }
-                            JSONObject json=new JSONObject(sb.toString());
+                     final String url="http://"+ Net.ip+":8080/WORK/servlet/LoginServlet?username="+
+                             user_name+"&password="+ user_password;
 
-                            Message message=new Message();
-                            message.what=json.getInt("status");
-                            handler.sendMessage(message);
+                     new Thread(new Runnable() {
+                         @Override
+                         public void run() {
+                             try {
+                                 URL Url=new URL(url);
+                                 HttpURLConnection httpURLConnection= (HttpURLConnection) Url.openConnection();
+                                 httpURLConnection.setRequestMethod("GET");
+                                 httpURLConnection.setConnectTimeout(8000);
+                                 httpURLConnection.setReadTimeout(8000);
+                                 httpURLConnection.setRequestProperty("Charset", "UTF-8");
+                                 InputStream in=httpURLConnection.getInputStream();
+                                 BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(in));
+                                 StringBuilder sb = new StringBuilder();
+                                 String line;
+                                 while((line=bufferedReader.readLine())!=null)
+                                 {
+                                     sb.append(line);
+                                 }
+                                 JSONObject json=new JSONObject(sb.toString());
 
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
+                                 Message message=new Message();
+                                 message.what=json.getInt("status");
+                                 handler.sendMessage(message);
+
+                             } catch (Exception e) {
+                                 Message message=new Message();
+                                 message.what=-11;
+                                 handler.sendMessage(message);}
+                         }
+                     }).start();
+                 }
+
+
 
 
 

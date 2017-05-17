@@ -32,12 +32,13 @@
         android:layout_marginRight="10dp"
         android:layout_marginLeft="10dp">
       <TextView
+          android:layout_marginTop="10dp"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:textSize="24sp"
+          android:textSize="20sp"
           android:layout_marginLeft="20dp"
           android:textColor="@color/colorBg"
-          android:text="商品名称"/>
+          android:text="商品名称或编号"/>
       <EditText
           android:id="@+id/good_out_input"
           android:layout_width="match_parent"
@@ -76,7 +77,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 android:textColor="@color/colorBg"
                 android:text="货物编号"/>
             <TextView
@@ -95,7 +96,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textColor="@color/colorBg"
             android:text="货物名称"/>
         <TextView
@@ -115,7 +116,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textColor="@color/colorBg"
             android:text="货物规格"/>
         <TextView
@@ -135,7 +136,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textColor="@color/colorBg"
             android:text="货物单价"/>
         <TextView
@@ -155,7 +156,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textColor="@color/colorBg"
             android:text="货物余量"/>
         <TextView
@@ -188,7 +189,7 @@
           <TextView
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:textSize="24sp"
+              android:textSize="20sp"
               android:layout_gravity="center"
               android:textColor="@color/colorBg"
               android:text="出货数量"/>

@@ -66,6 +66,9 @@ public class GoodOutActivity extends AppCompatActivity implements View.OnClickLi
                   Toast.makeText(GoodOutActivity.this,"更新数据失败",Toast.LENGTH_SHORT).show();
 
                   break;
+              case -11:
+                  Toast.makeText(getApplicationContext(),"连接超时",Toast.LENGTH_SHORT).show();
+                  break;
               default:
                   break;
 
@@ -187,8 +190,9 @@ public class GoodOutActivity extends AppCompatActivity implements View.OnClickLi
 
                 }
                 catch (Exception e)
-                {
-                    e.printStackTrace();
+                {    Message message=new Message();
+                    message.what=-11;
+                    handler.sendMessage(message);
                 }
             }
         }).start();
@@ -238,9 +242,10 @@ public class GoodOutActivity extends AppCompatActivity implements View.OnClickLi
                     handler.sendMessage(message);
 
                 }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
+                catch (Exception e) {
+                    Message message = new Message();
+                    message.what = -11;
+                    handler.sendMessage(message);
                 }
             }
         }).start();
@@ -287,7 +292,9 @@ public class GoodOutActivity extends AppCompatActivity implements View.OnClickLi
                 }
                 catch (Exception e)
                 {
-                    e.printStackTrace();
+                    Message message=new Message();
+                    message.what=-11;
+                    handler.sendMessage(message);
                 }
             }
         }).start();

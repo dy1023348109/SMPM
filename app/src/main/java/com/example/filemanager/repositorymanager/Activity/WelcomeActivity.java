@@ -3,10 +3,14 @@ package com.example.filemanager.repositorymanager.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 
+import com.example.filemanager.repositorymanager.Entity.Net;
 import com.example.filemanager.repositorymanager.R;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -24,6 +28,8 @@ public class WelcomeActivity extends AppCompatActivity {
                 finish();
             }
         };
+
+
 
         timer.schedule(task,2000);
     }

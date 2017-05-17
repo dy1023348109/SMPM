@@ -48,7 +48,7 @@ public class GoodInActivity extends AppCompatActivity {
 
   //  public TextView good_in_info;
     public int RESULT_LOAD_IMAGE = 1;
-    public String imgpath;
+    public String imgpath=null;
     int type = -1;
     public Handler handler = new Handler() {
         public void handleMessage(Message message) {
@@ -92,6 +92,9 @@ public class GoodInActivity extends AppCompatActivity {
                 case -3:
                     finish();
                     break;
+                case -11:
+                    Toast.makeText(getApplicationContext(),"连接超时",Toast.LENGTH_SHORT).show();
+                    break;
                 default:
                     break;
             }
@@ -117,16 +120,24 @@ public class GoodInActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //存至数据库
-                String good_name = good_in_name.getText().toString();
-                int good_id = Integer.valueOf(good_in_id.getText().toString());
-                String good_spec = good_in_spec.getText().toString();
-                int good_price = Integer.valueOf(good_in_price.getText().toString());
-                int good_quan = Integer.valueOf(good_in_quan.getText().toString());
-                String url = "http://"+ Net.ip+":8080/WORK/servlet/AddGoodsServlet?good_name="
-                        + good_name + "&good_id=" + good_id + "&good_spec=" + good_spec + "&good_price=" + good_price
-                        + "&good_quan=" + good_quan + "&type=" + type;
+                if (imgpath!=null)
+                {
+                    String good_name = good_in_name.getText().toString();
+                    int good_id = Integer.valueOf(good_in_id.getText().toString());
+                    String good_spec = good_in_spec.getText().toString();
+                    int good_price = Integer.valueOf(good_in_price.getText().toString());
+                    int good_quan = Integer.valueOf(good_in_quan.getText().toString());
+                    String url = "http://"+ Net.ip+":8080/WORK/servlet/AddGoodsServlet?good_name="
+                            + good_name + "&good_id=" + good_id + "&good_spec=" + good_spec + "&good_price=" + good_price
+                            + "&good_quan=" + good_quan + "&type=" + type;
 
-                saveData(url);
+                    saveData(url);
+                }
+                else
+                {
+                    Toast.makeText(getApplicationContext(),"请选择图片",Toast.LENGTH_SHORT).show();
+                }
+
                 // formUpload("http://169.254.186.190:8080/WORK/servlet/SaveImageServlet", imgpath);
             }
         });
@@ -178,7 +189,8 @@ public class GoodInActivity extends AppCompatActivity {
                                 handler.sendMessage(message);
 
                             } catch (Exception e) {
-                                e.printStackTrace();
+                                Toast.makeText(getApplicationContext(),"连接超时",Toast.LENGTH_SHORT).show();
+
                             }
 
 
@@ -250,7 +262,8 @@ public class GoodInActivity extends AppCompatActivity {
                     message.what = json.getInt("status");
                     handler.sendMessage(message);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(),"连接超时",Toast.LENGTH_SHORT).show();
+
                 }
 
 
@@ -334,7 +347,9 @@ public class GoodInActivity extends AppCompatActivity {
                     int good_id = Integer.valueOf(good_in_id.getText().toString());
                     updateImagePath(rsp, good_id);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Message message=new Message();
+                    message.what=-11;
+                    handler.sendMessage(message);
                 } finally {
                     if (conn != null) {
                         conn.disconnect();
@@ -403,7 +418,9 @@ public class GoodInActivity extends AppCompatActivity {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Message message=new Message();
+            message.what=-11;
+            handler.sendMessage(message);
         }
 
     }

@@ -33,7 +33,6 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:layout_margin="20dp">
-
             <TextView
                 android:id="@+id/goods_activity_id"
                 android:layout_width="match_parent"
@@ -41,14 +40,12 @@
                 android:textColor="#000000"
                 android:text="商品编号:910089298131"
                 android:textSize="26sp"/>
-
             <TextView
                 android:id="@+id/goods_activity_spec"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:layout_marginTop="10dp"
                 android:textColor="#000000"
-
                 android:text="商品规格:50包/箱"
                 android:textSize="26sp"/>
             <TextView
@@ -57,7 +54,6 @@
                 android:layout_height="30dp"
                 android:layout_marginTop="10dp"
                 android:textColor="#000000"
-
                 android:text="商品单价:50元/箱"
                 android:textSize="26sp"/>
             <TextView
@@ -68,9 +64,6 @@
                 android:text="商品余量:47箱"
                 android:textColor="#000000"
                 android:textSize="26sp"/>
-
         </LinearLayout>
-
-
     </LinearLayout>
 </LinearLayout>

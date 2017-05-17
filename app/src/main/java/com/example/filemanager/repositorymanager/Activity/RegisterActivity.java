@@ -48,6 +48,9 @@ public class RegisterActivity extends AppCompatActivity {
                 case 11:
                     Toast.makeText(getApplicationContext(),"注册失败",Toast.LENGTH_SHORT).show();
                     break;
+                case -11:
+                    Toast.makeText(getApplicationContext(),"连接超时",Toast.LENGTH_SHORT).show();
+                    break;
                 default:
                     f=false;
                     break;
@@ -70,10 +73,11 @@ public class RegisterActivity extends AppCompatActivity {
                 String username=register_username.getText().toString();
                 String password=register_password.getText().toString();
                 String verify_password=register_verify_password.getText().toString();
-                if (username.contains(" "))
+
+                if (username.contains(" ")||password.contains(" "))
                 {
                     //info.setText("账号中含有空格");
-                    Toast.makeText(getApplicationContext(),"账号中含有空格",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"输入中含有空格",Toast.LENGTH_SHORT).show();
 
 
                 }
@@ -81,6 +85,11 @@ public class RegisterActivity extends AppCompatActivity {
                 {
 //                    info.setText("两次输入的密码不同");
                     Toast.makeText(getApplicationContext(),"两次输入的密码不同",Toast.LENGTH_SHORT).show();
+
+                }
+                else if (username.length()<5||password.length()<5)
+                {
+                    Toast.makeText(getApplicationContext(),"账号密码至少需要5位",Toast.LENGTH_SHORT).show();
 
                 }
                 else
@@ -127,8 +136,9 @@ public class RegisterActivity extends AppCompatActivity {
                     handler.sendMessage(message);
 
                 } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                    Message message=new Message();
+                    message.what=-11;
+                    handler.sendMessage(message);}
             }
         }).start();
     }
@@ -158,8 +168,9 @@ public class RegisterActivity extends AppCompatActivity {
                     message.what =json.getInt("status");
                     handler.sendMessage(message);
                 } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                    Message message=new Message();
+                    message.what=-11;
+                    handler.sendMessage(message);}
             }
         }).start();
     }

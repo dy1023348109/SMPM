@@ -40,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
         goodsFragment=new GoodsFragment();
 
         currentfragment=goodsFragment;
+        Bundle bundle=new Bundle();
+        bundle.putSerializable("user",user);
+        goodsFragment.setArguments(bundle);
         FragmentTransaction transaction=fragmentManager.beginTransaction();
         transaction.add(R.id.frame_area,goodsFragment);
         transaction.commit();
@@ -59,10 +62,16 @@ public class MainActivity extends AppCompatActivity {
                                 goodsFragment = new GoodsFragment();
 
                             }
+
+                            Bundle bundle=new Bundle();
+                            bundle.putSerializable("user",user);
+                            goodsFragment.setArguments(bundle);
                             FragmentTransaction transaction = fragmentManager.beginTransaction();
                             transaction.replace(R.id.frame_area,goodsFragment);
                             currentfragment = goodsFragment;
                             transaction.commit();
+
+
                         }
 
                         break;
@@ -84,8 +93,9 @@ public class MainActivity extends AppCompatActivity {
 
                         break;
                     case R.id.user:
-                        if (currentfragment!=userFragment)
-                        {
+
+                            if (currentfragment!=userFragment)
+                            {
                             if (userFragment == null) {
                                 userFragment = new UserFragment();
 

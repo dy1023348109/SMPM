@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/colorBg"
+        android:textColor="@drawable/button"
         android:text="商品编号"/>
     <EditText
         android:id="@+id/good_in_input"
@@ -21,7 +21,7 @@
         android:id="@+id/good_in_verify"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/colorBg"
+        android:background="@drawable/button"
         android:textColor="@color/colorWhite"
         android:text="验证编号"/>
     <TextView
@@ -91,7 +91,7 @@
         android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorBg"
+        android:background="@drawable/button"
         android:textColor="@color/colorWhite"
         android:text="选择图片"/>
         <RelativeLayout
@@ -116,7 +116,7 @@
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/colorBg"
+        android:background="@drawable/button"
         android:textColor="@color/colorWhite"
         android:text="确认"/>
 </LinearLayout>

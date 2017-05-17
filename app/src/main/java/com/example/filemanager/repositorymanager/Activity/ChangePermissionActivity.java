@@ -47,7 +47,7 @@ public class ChangePermissionActivity extends AppCompatActivity implements Adapt
                     changePermission();
                     break;
                 case 4:
-                    Toast.makeText(getApplicationContext(),"修改成功",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"修改权限成功",Toast.LENGTH_SHORT).show();
                     Message message1=new Message();
                     message1.what=-3;
                     handler.sendMessageAtTime(message1,1000);
@@ -64,6 +64,9 @@ public class ChangePermissionActivity extends AppCompatActivity implements Adapt
                     break;
                 case -3:
                     finish();
+                    break;
+                case -11:
+                    Toast.makeText(getApplicationContext(),"连接超时",Toast.LENGTH_SHORT).show();
                     break;
                 default:
                     break;
@@ -120,6 +123,9 @@ public class ChangePermissionActivity extends AppCompatActivity implements Adapt
             final String url="http://"+ Net.ip+":8080/WORK/servlet/ChangeServlet?username="+
                     user_name+"&newpassword=empty"+"&newpermission="+permission;
 
+
+
+
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -144,45 +150,56 @@ public class ChangePermissionActivity extends AppCompatActivity implements Adapt
                         handler.sendMessage(message);
 
                     } catch (Exception e) {
-                        e.printStackTrace();
+
+                        Message message=new Message();
+                        message.what=-11;
+                        handler.sendMessage(message);
                     }
                 }
             }).start();
         }
     }
 
-    public void verify()
-    {
-        String  user_name=change_permission_username.getText().toString();
-        String  user_password=change_permission_password.getText().toString();
-        final String url="http://"+ Net.ip+":8080/WORK/servlet/LoginServlet?username="+
-                user_name+"&password="+ user_password;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    URL Url=new URL(url);
-                    HttpURLConnection httpURLConnection= (HttpURLConnection) Url.openConnection();
-                    httpURLConnection.setRequestMethod("GET");
-                    httpURLConnection.setConnectTimeout(8000);
-                    httpURLConnection.setReadTimeout(8000);
-                    InputStream in=httpURLConnection.getInputStream();
-                    BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(in));
-                    StringBuilder sb = new StringBuilder();
-                    String line;
-                    while((line=bufferedReader.readLine())!=null)
-                    {
-                        sb.append(line);
-                    }
-                    JSONObject json=new JSONObject(sb.toString());
-                    Message message=new Message();
-                    message.what=json.getInt("status");
-                    handler.sendMessage(message);
+    public void verify() {
+        String user_name = change_permission_username.getText().toString();
+        String user_password = change_permission_password.getText().toString();
+        final String url = "http://" + Net.ip + ":8080/WORK/servlet/LoginServlet?username=" +
+                user_name + "&password=" + user_password;
 
-                } catch (Exception e) {
-                    e.printStackTrace();
+
+        if (user_name.contains(" ") || user_password.contains(" ")) {
+            Toast.makeText(getApplicationContext(), "输入有误，请重新输入", Toast.LENGTH_SHORT).show();
+        } else if (user_name.length() < 5 || user_password.length() < 5) {
+            Toast.makeText(getApplicationContext(), "至少输入5位，请重新输入", Toast.LENGTH_SHORT).show();
+        } else {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        URL Url = new URL(url);
+                        HttpURLConnection httpURLConnection = (HttpURLConnection) Url.openConnection();
+                        httpURLConnection.setRequestMethod("GET");
+                        httpURLConnection.setConnectTimeout(8000);
+                        httpURLConnection.setReadTimeout(8000);
+                        InputStream in = httpURLConnection.getInputStream();
+                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                        StringBuilder sb = new StringBuilder();
+                        String line;
+                        while ((line = bufferedReader.readLine()) != null) {
+                            sb.append(line);
+                        }
+                        JSONObject json = new JSONObject(sb.toString());
+                        Message message = new Message();
+                        message.what = json.getInt("status");
+                        handler.sendMessage(message);
+
+                    } catch (Exception e) {
+                        Message message = new Message();
+                        message.what = -11;
+                        handler.sendMessage(message);
+                    }
                 }
-            }
-        }).start();
+            }).start();
+        }
     }
 }

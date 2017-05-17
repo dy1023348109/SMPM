@@ -37,14 +37,18 @@ public class ChangePasswordActivity extends AppCompatActivity {
                 case 1:
                 case 2:
                 case 3:
-                    canChange=true;
-                    changePassword();
+
+
+
+                            changePassword();
+
                     break;
                 case 4:
-                    Toast.makeText(getApplicationContext(),"修改成功",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"修改密码成功",Toast.LENGTH_SHORT).show();
                     Message message1=new Message();
                         message1.what=-3;
-                    handler.sendMessageAtTime(message1,1000);
+                    handler.sendMessageAtTime(message1,2000);
+                    break;
                 case 0:
                     Toast.makeText(getApplicationContext(),"账号密码不匹配",Toast.LENGTH_SHORT).show();
                     break;
@@ -56,6 +60,9 @@ public class ChangePasswordActivity extends AppCompatActivity {
                     break;
                 case  -3:
                     finish();
+                    break;
+                case -11:
+                    Toast.makeText(getApplicationContext(),"连接超时",Toast.LENGTH_SHORT).show();
                     break;
                 default:
                     break;
@@ -88,34 +95,60 @@ public class ChangePasswordActivity extends AppCompatActivity {
         final String url="http://"+ Net.ip+":8080/WORK/servlet/LoginServlet?username="+
                 user_name+"&password="+ user_password;
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    URL Url=new URL(url);
-                    HttpURLConnection httpURLConnection= (HttpURLConnection) Url.openConnection();
-                    httpURLConnection.setRequestMethod("GET");
-                    httpURLConnection.setConnectTimeout(8000);
-                    httpURLConnection.setReadTimeout(8000);
-                    httpURLConnection.setRequestProperty("Charset", "UTF-8");
-                    InputStream in=httpURLConnection.getInputStream();
-                    BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(in));
-                    StringBuilder sb = new StringBuilder();
-                    String line;
-                    while((line=bufferedReader.readLine())!=null)
-                    {
-                        sb.append(line);
-                    }
-                    JSONObject json=new JSONObject(sb.toString());
-                    Message message=new Message();
-                    message.what=json.getInt("status");
-                    handler.sendMessage(message);
+        if (user_name.contains(" ")||user_password.contains(" "))
+        {
+            Toast.makeText(getApplicationContext(),"输入有误，请重新输入",Toast.LENGTH_SHORT).show();
+        }
+        else if (user_name.length()<5||user_password.length()<5)
+        {
+            Toast.makeText(getApplicationContext(),"至少输入5位，请重新输入",Toast.LENGTH_SHORT).show();
+        }else if (!(change_password.getText().toString()).equals((verify_change_password.getText().toString())))
+        {
+            Toast.makeText(getApplicationContext(),"两次输入的新密码不同",Toast.LENGTH_SHORT).show();
 
-                } catch (Exception e) {
-                    e.printStackTrace();
+        }
+        else
+        {
+
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        URL Url=new URL(url);
+                        HttpURLConnection httpURLConnection= (HttpURLConnection) Url.openConnection();
+                        httpURLConnection.setRequestMethod("GET");
+                        httpURLConnection.setConnectTimeout(8000);
+                        httpURLConnection.setReadTimeout(8000);
+                        httpURLConnection.setRequestProperty("Charset", "UTF-8");
+                        InputStream in=httpURLConnection.getInputStream();
+                        BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(in));
+                        StringBuilder sb = new StringBuilder();
+                        String line;
+                        while((line=bufferedReader.readLine())!=null)
+                        {
+                            sb.append(line);
+                        }
+                        JSONObject json=new JSONObject(sb.toString());
+                        Message message=new Message();
+                        message.what=json.getInt("status");
+                        handler.sendMessage(message);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+
+                        Message message=new Message();
+                        message.what=-11;
+                        handler.sendMessage(message);
+                    }
                 }
-            }
-        }).start();
+            }).start();
+
+
+        }
+
+
+
     }
 
     public void changePassword()
@@ -148,7 +181,9 @@ public class ChangePasswordActivity extends AppCompatActivity {
                     handler.sendMessage(message);
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Message message=new Message();
+                    message.what=-11;
+                    handler.sendMessage(message);
                 }
             }
         }).start();

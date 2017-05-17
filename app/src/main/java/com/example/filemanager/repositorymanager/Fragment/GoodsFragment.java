@@ -76,13 +76,19 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
 
 
             }
+            else
+            {
+
+                    Toast.makeText(getContext(),"连接超时",Toast.LENGTH_SHORT).show();
+
+            }
 
 
         }
     };
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mView= inflater.inflate(R.layout.good_layout,null);
-       // user= (User) getArguments().getSerializable("user");
+        user= (User) getArguments().getSerializable("user");
         initView();
         return mView;
 
@@ -171,7 +177,10 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
                  }
                  catch (Exception e)
                  {
-                     e.printStackTrace();
+
+                     Message message=new Message();
+                     message.what=-11;
+                     handler.sendMessage(message);
                  }
              }
          }).start();
@@ -231,40 +240,51 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
     }
     @Override
     public void onClick(View v) {
-         int id=v.getId();
+
+
+
+        int id=v.getId();
         switch (id)
         {
             case R.id.add:  //货物入库或者出库
+                   int permission=user.getUserType();
+                   if (permission<3)
+                   {
+                       AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                       builder.setTitle("货物出库或入库");
+                       builder.setItems(item, new DialogInterface.OnClickListener() {
+                           public void onClick(DialogInterface dialog, int which) {
+                               // TODO Auto-generated method stub
+                               switch (which)
+                               {
+                                   case 0:
+                                       //出库
+                                       Intent intent1=new Intent();
+                                       Bundle bundle=new Bundle();
+                                       Good g=new Good();
+                                       g.setGoodid(-1);
+                                       bundle.putSerializable("good",g);
+                                       intent1.putExtras(bundle);
+                                       intent1.setClass(getContext(),GoodOutActivity.class);
+                                       startActivity(intent1);
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                    builder.setTitle("货物出库或入库");
-                    builder.setItems(item, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            // TODO Auto-generated method stub
-                            switch (which)
-                            {
-                                case 0:
-                                    //出库
-                                    Intent intent1=new Intent();
-                                    Bundle bundle=new Bundle();
-                                    Good g=new Good();
-                                    g.setGoodid(-1);
-                                    bundle.putSerializable("good",g);
-                                    intent1.putExtras(bundle);
-                                    intent1.setClass(getContext(),GoodOutActivity.class);
-                                    startActivity(intent1);
+                                       break;
+                                   case 1:
+                                       //入库
+                                       Intent intent2=new Intent();
+                                       intent2.setClass(getContext(),GoodInActivity.class);
+                                       startActivity(intent2);
+                                       break;
+                               }
+                           }
+                       });
+                       builder.show();
+                   }else
+                   {
+                       Toast.makeText(getContext(),"用户权限不足",Toast.LENGTH_SHORT).show();
+                   }
 
-                                    break;
-                                case 1:
-                                    //入库
-                                    Intent intent2=new Intent();
-                                    intent2.setClass(getContext(),GoodInActivity.class);
-                                    startActivity(intent2);
-                                    break;
-                            }
-                        }
-                    });
-                    builder.show();
+
 
             break;
             case R.id.search://查找货物
@@ -291,9 +311,11 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
 
 
         final String url="http://"+Net.ip+":8080/WORK/servlet/SearchGoodServletById?good_id="+id;
+
         new Thread(new Runnable() {
             @Override
             public void run() {
+                Message message=new Message();
                 try{
 
                     URL Url=new URL(url);
@@ -315,14 +337,12 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
                     ShowData(jsonstr,"",id,goodlist);
                     currentList=datalist;
                     datalist=goodlist;
-                    Message message=new Message();
                     message.what=1;
-                    handler.sendMessage(message);
+                } catch (Exception e) {
+                    message.what=-11;
 
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
+                }finally {
+                    handler.sendMessage(message);
                 }
             }
         }).start();

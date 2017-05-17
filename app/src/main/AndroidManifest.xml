@@ -36,10 +36,6 @@
         <activity android:name=".Activity.RegisterActivity" />
         <activity android:name=".Activity.ChangePasswordActivity" />
         <activity android:name=".Activity.ChangePermissionActivity" />
-        <activity
-            android:name=".Activity.NoteActivity"
-            android:label="@string/title_activity_note"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
