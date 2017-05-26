@@ -7,18 +7,18 @@ import java.io.Serializable;
  */
 
 public class Good  implements Serializable{
-    public int good_id;//商品id
+    public String good_id;//商品id
     public int good_price;//商品单价
     public int good_quan;//商品数量
     public String good_name;//商品名称
     public String good_spec;//商品规格
     public String good_url;//商品图片的地址
 
-    public int getGoodid() {
+    public String getGoodid() {
         return good_id;
     }
 
-    public void setGoodid(int good_id) {
+    public void setGoodid(String good_id) {
         this.good_id = good_id;
     }
 

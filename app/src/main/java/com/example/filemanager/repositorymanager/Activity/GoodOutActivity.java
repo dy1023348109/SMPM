@@ -40,7 +40,7 @@ public class GoodOutActivity extends AppCompatActivity implements View.OnClickLi
               case 1:
                   good= (Good) message.obj;
                   Log.d("good",good.getGoodname());
-                  if (good.getGoodid()==-1)
+                  if (good.getGoodid().equals("-1"))
                   {
                       Toast.makeText(getApplicationContext(),"无此商品",Toast.LENGTH_SHORT).show();
                   }
@@ -95,7 +95,7 @@ public class GoodOutActivity extends AppCompatActivity implements View.OnClickLi
         good_out_save.setOnClickListener(this);
 
         good= (Good) getIntent().getSerializableExtra("good");
-        if (good.getGoodid()!=-1)
+        if (!good.getGoodid().equals("-1"))
         {
             goods_out_id.setText(good.getGoodid()+"");
             good_out_name.setText(good.getGoodname());
@@ -157,7 +157,7 @@ public class GoodOutActivity extends AppCompatActivity implements View.OnClickLi
 
        }
     }
-    public boolean UpdateRemain(int good_id,int remain,int out,String good_name)
+    public boolean UpdateRemain(String good_id,int remain,int out,String good_name)
     {
         //更新数据库数据
 
@@ -230,7 +230,7 @@ public class GoodOutActivity extends AppCompatActivity implements View.OnClickLi
                     String jsonstr=sb.toString();
                     JSONObject jsonObject=new JSONObject(jsonstr);
                     Good good=new Good();
-                    good.setGoodid(jsonObject.getInt("good_id"));
+                    good.setGoodid(jsonObject.getString("good_id"));
                     good.setGoodprice(jsonObject.getInt("good_price"));
                     good.setGoodquan(jsonObject.getInt("good_quan"));
                     good.setGoodname(jsonObject.getString("good_name"));
@@ -278,7 +278,7 @@ public class GoodOutActivity extends AppCompatActivity implements View.OnClickLi
                     String jsonstr=sb.toString();
                     JSONObject jsonObject=new JSONObject(jsonstr);
                     Good good=new Good();
-                    good.setGoodid(jsonObject.getInt("good_id"));
+                    good.setGoodid(jsonObject.getString("good_id"));
                     good.setGoodprice(jsonObject.getInt("good_price"));
                     good.setGoodquan(jsonObject.getInt("good_quan"));
                     good.setGoodname(jsonObject.getString("good_name"));

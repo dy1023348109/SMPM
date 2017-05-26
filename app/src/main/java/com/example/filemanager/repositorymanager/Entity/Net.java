@@ -10,5 +10,5 @@ import java.net.UnknownHostException;
  */
 
 public class Net {
-  public static String ip="192.168.0.100";
+  public static String ip="192.168.0.1";
 }

@@ -145,7 +145,7 @@ public class GoodInActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    final int good_id = Integer.valueOf(good_in_id.getText().toString());
+                    final String good_id = good_in_id.getText().toString();
                     //判断id是否已存在 在一个线程里查询数据库 然后发送给handler 由handler处理 显示
                     final String url = "http://"+ Net.ip+":8080/WORK/servlet/VerifyGoodIdServlet?good_id=" + good_id;
                     new Thread(new Runnable() {
@@ -171,14 +171,14 @@ public class GoodInActivity extends AppCompatActivity {
                                 Message message = new Message();
                                 Good good=new Good();
                                 Log.e("good",json.toString());
-                                good.setGoodid(json.getInt("good_id"));
+                                good.setGoodid(json.getString("good_id"));
                                 good.setGoodprice(json.getInt("good_price"));
                                 good.setGoodquan(json.getInt("good_quan"));
                                 good.setGoodname(json.getString("good_name"));
                                 good.setGoodspec(json.getString("good_spec"));
                                 good.setGoodurl(json.getString("good_url"));
                                 message.obj=good;
-                                if (good.getGoodid()==-1)
+                                if (good.getGoodid().equals("-1"))
                                 {
                                     message.what=1;
                                 }
@@ -274,6 +274,8 @@ public class GoodInActivity extends AppCompatActivity {
     }
 
     public String formUpload(final String urlStr, final String filePath) {
+        //
+
         new Thread(new Runnable() {
             @Override
             public void run() {

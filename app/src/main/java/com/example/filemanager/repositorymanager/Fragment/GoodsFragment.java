@@ -63,7 +63,7 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
             if (message.what==1)
             {
                 Log.d("------datalist------",datalist.size()+"");
-                if (datalist.size()==0||datalist.get(0).getGoodid()==-1)
+                if (datalist.size()==0||(datalist.get(0).getGoodid()).equals("-1"))
                 {
                     Toast.makeText(getContext(),"没有这些商品",Toast.LENGTH_SHORT).show();
                     datalist=currentList;
@@ -108,15 +108,22 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                Good good= datalist.get(i);
-                Intent intent=new Intent();
-                intent.setClass(getContext(), GoodOutActivity.class);
-                Bundle bundle=new Bundle();
-                bundle.putSerializable("good",good);
-                intent.putExtras(bundle);
-                startActivity(intent);
+                if(user.getUserType()<3)
+                {
 
+                    Good good= datalist.get(i);
+                    Intent intent=new Intent();
+                    intent.setClass(getContext(), GoodOutActivity.class);
+                    Bundle bundle=new Bundle();
+                    bundle.putSerializable("good",good);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
 
+                }
+                else
+                {
+                    Toast.makeText(getContext(),"用户权限不足",Toast.LENGTH_SHORT).show();
+                }
                 return true;
             }
         });
@@ -165,7 +172,7 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
                     // String jsonstr=new String(js.getBytes("iso-8859-1"),"utf-8");
                      ArrayList<Good> goodlist=new ArrayList<Good>();
 
-                     ShowData(jsonstr,name,-1,goodlist);
+                     ShowData(jsonstr,name,"-1",goodlist);
                      currentList=datalist;
                      datalist=goodlist;
                      Log.d("----goodlist---",goodlist.size()+"");
@@ -185,8 +192,8 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
              }
          }).start();
     }
-    public  List<Good> ShowData(String jsonstr,String goodname,int goodid,List<Good> dl)  {
-        if(goodname.equals("")&&goodid==-1)
+    public  List<Good> ShowData(String jsonstr,String goodname,String goodid,List<Good> dl)  {
+        if(goodname.equals("")&&goodid.equals("-1"))
         {
             //显示全部数据  json Array
             try
@@ -199,7 +206,7 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
                 {
                     JSONObject jo=jsonArray.getJSONObject(i);
                     Good good=new Good();
-                    good.setGoodid(jo.getInt("good_id"));
+                    good.setGoodid(jo.getString("good_id"));
                     good.setGoodprice(jo.getInt("good_price"));
                     good.setGoodquan(jo.getInt("good_quan"));
                     good.setGoodname(jo.getString("good_name"));
@@ -221,7 +228,7 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
             try{
                 JSONObject jsonObject=new JSONObject(jsonstr);
                 Good good=new Good();
-                good.setGoodid(jsonObject.getInt("good_id"));
+                good.setGoodid(jsonObject.getString("good_id"));
                 good.setGoodprice(jsonObject.getInt("good_price"));
                 good.setGoodquan(jsonObject.getInt("good_quan"));
                 good.setGoodname(jsonObject.getString("good_name"));
@@ -262,7 +269,7 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
                                        Intent intent1=new Intent();
                                        Bundle bundle=new Bundle();
                                        Good g=new Good();
-                                       g.setGoodid(-1);
+                                       g.setGoodid("-1");
                                        bundle.putSerializable("good",g);
                                        intent1.putExtras(bundle);
                                        intent1.setClass(getContext(),GoodOutActivity.class);
@@ -293,8 +300,8 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
                 Log.d("isNum",isNum+"");
                 if (isNum)
                 {
-                    int gid=Integer.valueOf(str);
-                    getFromServletById(gid);
+                   ;
+                    getFromServletById(str);
                 }
                 else
                 {
@@ -306,7 +313,7 @@ public class GoodsFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    public void getFromServletById(final int id)
+    public void getFromServletById(final String id)
     {
 
 
